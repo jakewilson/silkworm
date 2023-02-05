@@ -2,7 +2,7 @@ import { lex } from "../src/lexer"
 import { Token, TokenType } from "../src/token"
 
 test('header 1', () => {
-  const expected: Array<Token<TokenType>> = [{
+  const expected: Array<Token> = [{
     type: TokenType.Header,
     block: true,
     content: 'Hello',
@@ -14,7 +14,7 @@ test('header 1', () => {
 })
 
 test('header 2', () => {
-  const expected: Array<Token<TokenType>> = [{
+  const expected: Array<Token> = [{
     type: TokenType.Header,
     block: true,
     content: 'Hello',
@@ -26,7 +26,7 @@ test('header 2', () => {
 })
 
 test('header 3', () => {
-  const expected: Array<Token<TokenType>> = [{
+  const expected: Array<Token> = [{
     type: TokenType.Header,
     block: true,
     content: 'Hello there mate ##',
@@ -38,7 +38,7 @@ test('header 3', () => {
 })
 
 test('header 4', () => {
-  const expected: Array<Token<TokenType>> = [{
+  const expected: Array<Token> = [{
     type: TokenType.Header,
     block: true,
     content: 'Hello there mate ##',
@@ -50,7 +50,7 @@ test('header 4', () => {
 })
 
 test('header 5', () => {
-  const expected: Array<Token<TokenType>> = [{
+  const expected: Array<Token> = [{
     type: TokenType.Header,
     block: true,
     content: 'yo',
@@ -62,7 +62,7 @@ test('header 5', () => {
 })
 
 test('header 6', () => {
-  const expected: Array<Token<TokenType>> = [{
+  const expected: Array<Token> = [{
     type: TokenType.Header,
     block: true,
     content: 'yo   ',
@@ -74,7 +74,7 @@ test('header 6', () => {
 })
 
 test('multiple headers', () => {
-  const expected: Array<Token<TokenType>> = [{
+  const expected: Array<Token> = [{
     type: TokenType.Header,
     block: true,
     content: 'header 1',
@@ -98,8 +98,8 @@ test('multiple headers', () => {
 })
 
 test('hr', () => {
-  const expected: Array<Token<TokenType>> = [{
-    type: TokenType.Hr,
+  const expected: Array<Token> = [{
+    type: TokenType.HorizontalRule,
     block: true,
     content: null,
     children: null,
@@ -110,14 +110,14 @@ test('hr', () => {
 })
 
 test('header 1 and hr', () => {
-  const expected: Array<Token<TokenType>> = [{
+  const expected: Array<Token> = [{
     type: TokenType.Header,
     block: true,
     content: 'hi',
     children: null,
     tag: 'h1',
   }, {
-    type: TokenType.Hr,
+    type: TokenType.HorizontalRule,
     block: true,
     content: null,
     children: null,
@@ -128,14 +128,14 @@ test('header 1 and hr', () => {
 })
 
 test('header 1 and hr and header 2', () => {
-  const expected: Array<Token<TokenType>> = [{
+  const expected: Array<Token> = [{
     type: TokenType.Header,
     block: true,
     content: 'hi',
     children: null,
     tag: 'h1',
   }, {
-    type: TokenType.Hr,
+    type: TokenType.HorizontalRule,
     block: true,
     content: null,
     children: null,
@@ -149,4 +149,84 @@ test('header 1 and hr and header 2', () => {
   }]
 
   expect(lex('# hi\n---\n## nice')).toStrictEqual(expected)
+})
+
+test('ul', () => {
+  const expected: Array<Token> = [{
+    type: TokenType.UnorderedList,
+    block: true,
+    content: null,
+    children: [{
+      type: TokenType.ListItem,
+      block: true,
+      content: 'hello',
+      children: null,
+      tag: 'li'
+    }],
+    tag: 'ul',
+  }]
+
+  expect(lex('* hello')).toStrictEqual(expected)
+})
+
+test('ul2', () => {
+  const expected: Array<Token> = [{
+    type: TokenType.UnorderedList,
+    block: true,
+    content: null,
+    children: [{
+      type: TokenType.ListItem,
+      block: true,
+      content: 'hello',
+      children: null,
+      tag: 'li'
+    }, {
+      type: TokenType.ListItem,
+      block: true,
+      // TODO this should break later when I add emphasis
+      content: 'hello *again*',
+      children: null,
+      tag: 'li'
+    }],
+    tag: 'ul',
+  }]
+
+  expect(lex('* hello\n* hello *again*')).toStrictEqual(expected)
+})
+
+test('ul4', () => {
+  const expected: Array<Token> = [{
+    type: TokenType.UnorderedList,
+    block: true,
+    content: null,
+    children: [{
+      type: TokenType.ListItem,
+      block: true,
+      content: 'hello',
+      children: null,
+      tag: 'li'
+    }, {
+      type: TokenType.ListItem,
+      block: true,
+      // TODO this should break later when I add emphasis
+      content: 'hello *again*',
+      children: null,
+      tag: 'li'
+    }, {
+      type: TokenType.ListItem,
+      block: true,
+      content: 'yoooo',
+      children: null,
+      tag: 'li'
+    }, {
+      type: TokenType.ListItem,
+      block: true,
+      content: 'what   up',
+      children: null,
+      tag: 'li'
+    }],
+    tag: 'ul',
+  }]
+
+  expect(lex('* hello\n* hello *again*\n*     yoooo\n* what   up')).toStrictEqual(expected)
 })

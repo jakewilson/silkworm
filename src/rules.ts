@@ -1,12 +1,14 @@
 import { Token, TokenType } from "./token";
 import { header } from "./block_rules/headers";
-import { hr } from "./block_rules/hr";
+import { horizontalRule } from "./block_rules/horizontal_rule";
+import { unorderedList } from "./block_rules/unordered_list";
 
 export interface BlockRule {
-  exec: (input: string) => Token<TokenType>
+  exec: (input: string, tokens: Array<Token>) => Token
 }
 
 export const blockRules: Array<BlockRule> = [
   header,
-  hr,
+  horizontalRule,
+  unorderedList,
 ]

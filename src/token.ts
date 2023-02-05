@@ -1,18 +1,21 @@
 export enum TokenType {
   Header,
-  Hr,
+  HorizontalRule,
+  ListItem,
+  Paragraph,
   Text,
+  UnorderedList,
 }
 
-export type Token<T extends TokenType> = {
-  type: T
+export type Token = {
+  type: TokenType
   block: boolean
-  children: Array<Token<TokenType>> | null
+  children: Array<Token> | null
   content: string | null
   tag: string
 }
 
-export function blankToken<T extends TokenType>(t: T): Token<T> {
+export function blankToken(t: TokenType): Token {
   return {
     block: false,
     type: t,

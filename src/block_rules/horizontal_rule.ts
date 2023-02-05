@@ -1,10 +1,10 @@
 import { BlockRule } from "../rules";
 import { blankToken, Token, TokenType } from "../token";
 
-export const hr: BlockRule = {
-  exec: (input: string): Token<TokenType.Hr> | null => {
+export const horizontalRule: BlockRule = {
+  exec: (input: string): Token | null => {
     if (/^\s*---\s*$/.exec(input)) {
-      const token = blankToken<TokenType.Hr>(TokenType.Hr)
+      const token = blankToken(TokenType.HorizontalRule)
       token.tag = 'hr'
       token.block = true
       return token
