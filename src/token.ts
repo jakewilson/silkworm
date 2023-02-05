@@ -1,6 +1,6 @@
 export enum TokenType {
   Header,
-  Header1,
+  Hr,
   Text,
 }
 

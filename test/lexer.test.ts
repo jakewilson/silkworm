@@ -72,3 +72,81 @@ test('header 6', () => {
 
   expect(lex('######          yo   ')).toStrictEqual(expected)
 })
+
+test('multiple headers', () => {
+  const expected: Array<Token<TokenType>> = [{
+    type: TokenType.Header,
+    block: true,
+    content: 'header 1',
+    children: null,
+    tag: 'h1',
+  }, {
+    type: TokenType.Header,
+    block: true,
+    content: 'header 2',
+    children: null,
+    tag: 'h2',
+  }, {
+    type: TokenType.Header,
+    block: true,
+    content: 'header 3',
+    children: null,
+    tag: 'h3',
+  }]
+
+  expect(lex('# header 1\n##    header 2\n### header 3')).toStrictEqual(expected)
+})
+
+test('hr', () => {
+  const expected: Array<Token<TokenType>> = [{
+    type: TokenType.Hr,
+    block: true,
+    content: null,
+    children: null,
+    tag: 'hr',
+  }]
+
+  expect(lex('---')).toStrictEqual(expected)
+})
+
+test('header 1 and hr', () => {
+  const expected: Array<Token<TokenType>> = [{
+    type: TokenType.Header,
+    block: true,
+    content: 'hi',
+    children: null,
+    tag: 'h1',
+  }, {
+    type: TokenType.Hr,
+    block: true,
+    content: null,
+    children: null,
+    tag: 'hr',
+  }]
+
+  expect(lex('# hi\n---')).toStrictEqual(expected)
+})
+
+test('header 1 and hr and header 2', () => {
+  const expected: Array<Token<TokenType>> = [{
+    type: TokenType.Header,
+    block: true,
+    content: 'hi',
+    children: null,
+    tag: 'h1',
+  }, {
+    type: TokenType.Hr,
+    block: true,
+    content: null,
+    children: null,
+    tag: 'hr',
+  }, {
+    type: TokenType.Header,
+    block: true,
+    content: 'nice',
+    children: null,
+    tag: 'h2',
+  }]
+
+  expect(lex('# hi\n---\n## nice')).toStrictEqual(expected)
+})
