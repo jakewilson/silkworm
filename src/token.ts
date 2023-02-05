@@ -1,4 +1,5 @@
 export enum TokenType {
+  Header,
   Header1,
   Text,
 }
@@ -8,6 +9,7 @@ export type Token<T extends TokenType> = {
   block: boolean
   children: Array<Token<TokenType>> | null
   content: string | null
+  tag: string
 }
 
 export function blankToken<T extends TokenType>(t: T): Token<T> {
@@ -16,5 +18,6 @@ export function blankToken<T extends TokenType>(t: T): Token<T> {
     type: t,
     content: null,
     children: null,
+    tag: null,
   }
 }
