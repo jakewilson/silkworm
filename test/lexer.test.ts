@@ -73,6 +73,13 @@ test('header 6', () => {
   expect(lex('######          yo   ')).toStrictEqual(expected)
 })
 
+test('not a header', () => {
+  const expected: Array<Token> = []
+
+  expect(lex('####hi')).toStrictEqual(expected)
+})
+
+
 test('multiple headers', () => {
   const expected: Array<Token> = [{
     type: TokenType.Header,
