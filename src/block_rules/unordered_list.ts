@@ -3,7 +3,7 @@ import { blankToken, Token, TokenType } from "../token";
 
 export const unorderedList: BlockRule = {
   exec: (input: string, tokens: Array<Token>): Token | null => {
-    const matches = /^(\s*)\*\s*(.*)\s*$/.exec(input)
+    const matches = /^(\s*)\*\s+(.*)\s*$/.exec(input)
     if (!matches || matches.length < 3) {
       return null
     }

@@ -1,4 +1,5 @@
 export enum TokenType {
+  Blockquote,
   Header,
   HorizontalRule,
   ListItem,

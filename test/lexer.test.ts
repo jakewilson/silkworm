@@ -237,3 +237,64 @@ test('ul4', () => {
 
   expect(lex('* hello\n* hello *again*\n*     yoooo\n* what   up')).toStrictEqual(expected)
 })
+
+test('not a ul', () => {
+  const expected: Array<Token> = []
+  expect(lex('*hello')).toStrictEqual(expected)
+})
+
+test('single-line blockquote', () => {
+  const expected: Array<Token> = [{
+    type: TokenType.Blockquote,
+    block: true,
+    content: 'hello',
+    children: null,
+    tag: 'blockquote',
+  }]
+
+  expect(lex('> hello')).toStrictEqual(expected)
+})
+
+test('multi-line blockquote', () => {
+  const expected: Array<Token> = [{
+    type: TokenType.Blockquote,
+    block: true,
+    content: 'hello\nthere\nwhat up?',
+    children: null,
+    tag: 'blockquote',
+  }]
+
+  expect(lex('> hello\n> there\n> what up?')).toStrictEqual(expected)
+})
+
+test('nested blockquote', () => {
+  const expected: Array<Token> = [{
+    type: TokenType.Blockquote,
+    block: true,
+    content: 'hello',
+    children: null,
+    tag: 'blockquote',
+  }]
+
+  expect(lex('> hello')).toStrictEqual(expected)
+
+})
+
+test('header than blockquote', () => {
+  const expected: Array<Token> = [{
+    type: TokenType.Header,
+    block: true,
+    content: 'header 5',
+    children: null,
+    tag: 'h5',
+  }, {
+    type: TokenType.Blockquote,
+    block: true,
+    content: 'hello',
+    children: null,
+    tag: 'blockquote',
+  }]
+
+  expect(lex('##### header 5\n> hello')).toStrictEqual(expected)
+
+})
