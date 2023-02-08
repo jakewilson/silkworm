@@ -3,6 +3,7 @@ export enum TokenType {
   Codeblock,
   Header,
   HorizontalRule,
+  Image,
   ListItem,
   Paragraph,
   Text,
@@ -14,7 +15,8 @@ export type Token = {
   block: boolean
   children: Array<Token> | null
   content: string | null
-  tag: string
+  tag: string | null
+  attrs: object | null
 }
 
 export function blankToken(t: TokenType): Token {
@@ -24,5 +26,6 @@ export function blankToken(t: TokenType): Token {
     content: null,
     children: null,
     tag: null,
+    attrs: null,
   }
 }
