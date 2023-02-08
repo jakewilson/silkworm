@@ -74,7 +74,13 @@ test('header 6', () => {
 })
 
 test('not a header', () => {
-  const expected: Array<Token> = []
+  const expected: Array<Token> = [{
+    type: TokenType.Paragraph,
+    block: true,
+    content: '####hi',
+    children: null,
+    tag: 'p',
+  }]
 
   expect(lex('####hi')).toStrictEqual(expected)
 })
@@ -239,7 +245,13 @@ test('ul4', () => {
 })
 
 test('not a ul', () => {
-  const expected: Array<Token> = []
+  const expected: Array<Token> = [{
+    type: TokenType.Paragraph,
+    block: true,
+    content: '*hello',
+    children: null,
+    tag: 'p',
+  }]
   expect(lex('*hello')).toStrictEqual(expected)
 })
 
@@ -321,6 +333,12 @@ test('empty codeblock', () => {
 
 test('codeblock2', () => {
   const expected: Array<Token> = [{
+    type: TokenType.Paragraph,
+    block: true,
+    content: "```console.log('two lines');\nx += 6;",
+    children: null,
+    tag: 'p',
+  }, {
     type: TokenType.Codeblock,
     block: true,
     content: "",
@@ -356,4 +374,138 @@ test('blockquote, codeblock, header', () => {
   }]
   expect(lex("> this is a quote\n```\nconst x = square(4);\n```\n# header!"))
     .toStrictEqual(expected)
+})
+
+test('paragraph', () => {
+  const expected: Array<Token> = [{
+    type: TokenType.Paragraph,
+    block: true,
+    content: "first par",
+    children: null,
+    tag: 'p',
+  }]
+  expect(lex("first par")).toStrictEqual(expected)
+})
+
+test('paragraph2', () => {
+  const expected: Array<Token> = [{
+    type: TokenType.Paragraph,
+    block: true,
+    content: "first line\nsecond line\nthird line",
+    children: null,
+    tag: 'p',
+  }]
+  expect(lex(`first line
+second line
+third line`)).toStrictEqual(expected)
+})
+
+test('lots of stuff', () => {
+  const expected: Array<Token> = [{
+    type: TokenType.Header,
+    block: true,
+    content: "Introduction",
+    children: null,
+    tag: 'h1',
+  }, {
+    type: TokenType.Paragraph,
+    block: true,
+    content: "    Indent! Dinosaurs have traditionally been considered a separate group from birds, which\nevolved from dinosaurs...",
+    children: null,
+    tag: 'p',
+  }, {
+    type: TokenType.UnorderedList,
+    block: true,
+    content: null,
+    children: [{
+      type: TokenType.ListItem,
+      block: true,
+      content: "first item",
+      children: null,
+      tag: 'li',
+    }, {
+      type: TokenType.ListItem,
+      block: true,
+      content: "second item",
+      children: null,
+      tag: 'li',
+    }],
+    tag: 'ul',
+  }, {
+    type: TokenType.Paragraph,
+    block: true,
+    content: "    Paragraph again",
+    children: null,
+    tag: 'p',
+  }, {
+    type: TokenType.Paragraph,
+    block: true,
+    content: "    A different paragraph",
+    children: null,
+    tag: 'p',
+  }]
+  expect(lex(`# Introduction
+    Indent! Dinosaurs have traditionally been considered a separate group from birds, which
+evolved from dinosaurs...
+* first item
+* second item
+    Paragraph again
+    
+    A different paragraph`)).toStrictEqual(expected)
+})
+
+test('lots of stuff2', () => {
+  const expected: Array<Token> = [{
+    type: TokenType.Header,
+    block: true,
+    content: "Introduction",
+    children: null,
+    tag: 'h1',
+  }, {
+    type: TokenType.Paragraph,
+    block: true,
+    content: "    Indent! Dinosaurs have traditionally been considered a separate group from birds, which\nevolved from dinosaurs...",
+    children: null,
+    tag: 'p',
+  }, {
+    type: TokenType.UnorderedList,
+    block: true,
+    content: null,
+    children: [{
+      type: TokenType.ListItem,
+      block: true,
+      content: "first item",
+      children: null,
+      tag: 'li',
+    }, {
+      type: TokenType.ListItem,
+      block: true,
+      content: "second item",
+      children: null,
+      tag: 'li',
+    }],
+    tag: 'ul',
+  }, {
+    type: TokenType.Paragraph,
+    block: true,
+    content: "    Paragraph again",
+    children: null,
+    tag: 'p',
+  }, {
+    type: TokenType.Paragraph,
+    block: true,
+    content: "    A different paragraph",
+    children: null,
+    tag: 'p',
+  }]
+  // same thing as above except a hardbreak after the header
+  expect(lex(`# Introduction
+
+    Indent! Dinosaurs have traditionally been considered a separate group from birds, which
+evolved from dinosaurs...
+* first item
+* second item
+    Paragraph again
+    
+    A different paragraph`)).toStrictEqual(expected)
 })

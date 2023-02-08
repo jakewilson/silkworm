@@ -1,9 +1,11 @@
 import { blockRules } from "./rules";
-import { Token } from "./token";
+import { blankToken, Token, TokenType } from "./token";
 
 export function lex(input: string): Array<Token> {
   const lexer = new Lexer(input)
-  return lexer.lexBlocks()
+  const blocks = lexer.lexBlocks()
+
+  return blocks
 }
 
 export class Lexer {
@@ -20,10 +22,13 @@ export class Lexer {
   lexBlocks(): Array<Token> {
     const tokens: Array<Token> = []
 
+    let startParagraph = false
     while (!this.atEnd()) {
       const line = this.advanceLine()
+      const hardbreak = line.trim() === ''
 
-      blockRules.some(rule => {
+      // stop at the first successful rule
+      const ruleFound = blockRules.some(rule => {
         const token = rule.exec(line, tokens, this)
         if (token) {
           tokens.push(token)
@@ -32,9 +37,40 @@ export class Lexer {
 
         return false
       })
+
+      if (!ruleFound && !hardbreak) {
+        // start a new paragraph if the last line was a hardbreak
+        if (startParagraph) {
+          tokens.push(this.newParagraph(line))
+        } else {
+          // start a new paragraph or continue the last one
+          const token = tokens.pop()
+          if (token) {
+            tokens.push(token)
+            if (token.type === TokenType.Paragraph) {
+              token.content += `\n${line}`
+            } else {
+              tokens.push(this.newParagraph(line))
+            }
+          } else { // start new paragraph
+            tokens.push(this.newParagraph(line))
+          }
+        }
+      }
+
+      startParagraph = hardbreak
     }
 
     return tokens
+  }
+
+  private newParagraph(content: string): Token {
+    const token = blankToken(TokenType.Paragraph)
+    token.block = true
+    token.tag = 'p'
+    token.content = content
+
+    return token
   }
 
   atEnd(): boolean {

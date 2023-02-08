@@ -1,10 +1,11 @@
 import { Token } from "./token";
+import { Lexer } from "./lexer";
+
+import { blockquote } from "./block_rules/blockquote";
+import { codeblock } from "./block_rules/code_block";
 import { header } from "./block_rules/headers";
 import { horizontalRule } from "./block_rules/horizontal_rule";
 import { unorderedList } from "./block_rules/unordered_list";
-import { blockquote } from "./block_rules/blockquote";
-import { Lexer } from "./lexer";
-import { codeblock } from "./block_rules/code_block";
 
 export interface BlockRule {
   exec: (
