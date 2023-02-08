@@ -2,8 +2,8 @@ import { BlockRule } from "../rules"
 import { blankToken, Token, TokenType } from "../token"
 
 export const blockquote: BlockRule = {
-  exec: (inp: string, tokens: Array<Token>): null | Token => {
-    const matches = /^\s*>\s+(.*)/.exec(inp)
+  exec: (line, tokens): null | Token => {
+    const matches = /^\s*>\s+(.*)/.exec(line)
 
     if (!matches || matches.length < 2) {
       return null

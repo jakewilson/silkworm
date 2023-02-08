@@ -294,7 +294,66 @@ test('header than blockquote', () => {
     children: null,
     tag: 'blockquote',
   }]
-
   expect(lex('##### header 5\n> hello')).toStrictEqual(expected)
+})
 
+test('codeblock', () => {
+  const expected: Array<Token> = [{
+    type: TokenType.Codeblock,
+    block: true,
+    content: 'console.log(\'hello\')',
+    children: null,
+    tag: 'code',
+  }]
+  expect(lex("```\nconsole.log('hello')\n```")).toStrictEqual(expected)
+})
+
+test('empty codeblock', () => {
+  const expected: Array<Token> = [{
+    type: TokenType.Codeblock,
+    block: true,
+    content: '',
+    children: null,
+    tag: 'code',
+  }]
+  expect(lex("```\n```")).toStrictEqual(expected)
+})
+
+test('codeblock2', () => {
+  const expected: Array<Token> = [{
+    type: TokenType.Codeblock,
+    block: true,
+    content: "",
+    children: null,
+    tag: 'code',
+  }]
+  // the three backticks aren't on their own line,
+  // so they are not parsed as the beginning of a codeblock
+  // hence the next line `x += 6` is not a part of that codeblock
+  // so the final ``` is the beginning of a codeblock that has nothing in it
+  expect(lex("```console.log('two lines');\nx += 6;\n```")).toStrictEqual(expected)
+})
+
+test('blockquote, codeblock, header', () => {
+  const expected: Array<Token> = [{
+    type: TokenType.Blockquote,
+    block: true,
+    content: "this is a quote",
+    children: null,
+    tag: 'blockquote',
+  }, {
+    type: TokenType.Codeblock,
+    block: true,
+    content: "const x = square(4);",
+    children: null,
+    tag: 'code',
+  }, {
+    type: TokenType.Header,
+    block: true,
+    content: "header!",
+    children: null,
+    tag: 'h1',
+  }]
+  expect(lex("> this is a quote\n```\nconst x = square(4);\n```\n# header!"))
+    .toStrictEqual(expected)
 })

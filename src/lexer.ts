@@ -1,27 +1,47 @@
 import { blockRules } from "./rules";
-import { blankToken, Token, TokenType } from "./token";
+import { Token } from "./token";
 
 export function lex(input: string): Array<Token> {
-  return lexBlocks(input)
+  const lexer = new Lexer(input)
+  return lexer.lexBlocks()
 }
 
-function lexBlocks(input: string): Array<Token> {
-  const lines = input.split('\n')
-  const tokens: Array<Token> = []
+export class Lexer {
+  private input: string
+  private lines: string[]
+  private index: number
 
-  for (let i = 0; i < lines.length; i++) {
-    const line = lines[i]
-
-    blockRules.some(rule => {
-      const token = rule.exec(line, tokens)
-      if (token) {
-        tokens.push(token)
-        return true
-      }
-
-      return false
-    })
+  constructor(input: string) {
+    this.input = input
+    this.lines = this.input.split('\n')
+    this.index = 0
   }
 
-  return tokens
+  lexBlocks(): Array<Token> {
+    const tokens: Array<Token> = []
+
+    while (!this.atEnd()) {
+      const line = this.advanceLine()
+
+      blockRules.some(rule => {
+        const token = rule.exec(line, tokens, this)
+        if (token) {
+          tokens.push(token)
+          return true
+        }
+
+        return false
+      })
+    }
+
+    return tokens
+  }
+
+  atEnd(): boolean {
+    return this.index >= this.lines.length
+  }
+
+  advanceLine(): string {
+    return this.lines[this.index++]
+  }
 }
