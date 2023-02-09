@@ -1,30 +1,5 @@
 import { lex } from "../src/lexer"
-import { Token, TokenType } from "../src/token"
-
-interface BlockTokenProps {
- type: TokenType
- content: string | null
- tag: string | null
- children?: Array<Token> | null
- attrs?: object | null
-}
-
-const blockToken = ({
-  type,
-  content,
-  tag,
-  children = null,
-  attrs = null
-}: BlockTokenProps): Token => {
-  return {
-    type,
-    content,
-    tag,
-    block: true,
-    attrs,
-    children,
-  }
-}
+import { blockToken, Token, TokenType } from "../src/token"
 
 test('header 1', () => {
   const expected: Array<Token> = [blockToken({
@@ -449,4 +424,136 @@ evolved from dinosaurs...
     Paragraph again
     
     A different paragraph`)).toStrictEqual(expected)
+})
+
+test('image', () => {
+  const expected: Array<Token> = [blockToken({
+    type: TokenType.Image,
+    content: null,
+    attrs: {
+      alt: 'Picture of a dog',
+      url: 'https://www.example.com/dog',
+    },
+    tag: 'img',
+  })]
+  expect(lex('![Picture of a dog](https://www.example.com/dog)')).toStrictEqual(expected)
+})
+
+test('image2', () => {
+  const expected: Array<Token> = [blockToken({
+    type: TokenType.Header,
+    content: 'Dogs Are Great',
+    tag: 'h1',
+  }), blockToken({
+    type: TokenType.Image,
+    content: null,
+    attrs: {
+      alt: 'Cute doggo',
+      url: 'example.com/cute',
+    },
+    tag: 'img',
+  }), blockToken({
+    type: TokenType.UnorderedList,
+    content: null,
+    children: [blockToken({
+      type: TokenType.ListItem,
+      tag: 'li',
+      content: "they're cute"
+    }), blockToken({
+      type: TokenType.ListItem,
+      tag: 'li',
+      content: "they're fun"
+    }), blockToken({
+      type: TokenType.ListItem,
+      tag: 'li',
+      content: "they're loving"
+    })],
+    tag: 'ul',
+  }), blockToken({
+    type: TokenType.Paragraph,
+    content: 'I love dogs!',
+    children: null,
+    tag: 'p',
+  })]
+  expect(lex(`# Dogs Are Great
+![Cute doggo](example.com/cute)
+* they're cute
+* they're fun
+* they're loving
+
+I love dogs!
+`)).toStrictEqual(expected)
+})
+
+test('image3', () => {
+  const expected: Array<Token> = [blockToken({
+    type: TokenType.Header,
+    content: 'Dogs Are Great',
+    tag: 'h1',
+  }), blockToken({
+    type: TokenType.Image,
+    content: null,
+    attrs: {
+      alt: 'Cute doggo',
+      url: 'example.com/cute',
+    },
+    tag: 'img',
+  }), blockToken({
+    type: TokenType.UnorderedList,
+    content: null,
+    children: [blockToken({
+      type: TokenType.ListItem,
+      tag: 'li',
+      content: "they're cute"
+    }), blockToken({
+      type: TokenType.ListItem,
+      tag: 'li',
+      content: "they're fun"
+    }), blockToken({
+      type: TokenType.ListItem,
+      tag: 'li',
+      content: "they're loving"
+    })],
+    tag: 'ul',
+  }), blockToken({
+    type: TokenType.Paragraph,
+    content: 'I love dogs!',
+    children: null,
+    tag: 'p',
+  })]
+  expect(lex(`# Dogs Are Great
+
+![Cute doggo](example.com/cute)
+
+* they're cute
+* they're fun
+* they're loving
+
+I love dogs!
+`)).toStrictEqual(expected)
+})
+
+test('image4', () => {
+  const expected: Array<Token> = [blockToken({
+    type: TokenType.Paragraph,
+    content: 'paragraph 1',
+    tag: 'p',
+  }), blockToken({
+    type: TokenType.Image,
+    content: null,
+    attrs: {
+      alt: 'Cute doggo',
+      url: 'example.com/cute',
+    },
+    tag: 'img',
+  }), blockToken({
+    type: TokenType.Paragraph,
+    content: 'paragraph 2\nstill paragraph 2',
+    tag: 'p',
+  })]
+  expect(lex(`paragraph 1
+![Cute doggo](example.com/cute)
+paragraph 2
+still paragraph 2
+`)).toStrictEqual(expected)
 })

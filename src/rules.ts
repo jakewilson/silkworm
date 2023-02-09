@@ -6,6 +6,7 @@ import { codeblock } from "./block_rules/code_block";
 import { header } from "./block_rules/headers";
 import { horizontalRule } from "./block_rules/horizontal_rule";
 import { unorderedList } from "./block_rules/unordered_list";
+import { image } from "./block_rules/image";
 
 export interface BlockRule {
   exec: (
@@ -20,5 +21,6 @@ export const blockRules: Array<BlockRule> = [
   codeblock,
   header,
   horizontalRule,
+  image,
   unorderedList,
 ]

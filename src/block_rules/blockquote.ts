@@ -1,5 +1,5 @@
 import { BlockRule } from "../rules"
-import { blankToken, Token, TokenType } from "../token"
+import { blockToken, Token, TokenType } from "../token"
 
 export const blockquote: BlockRule = {
   exec: (line, tokens): null | Token => {
@@ -10,10 +10,11 @@ export const blockquote: BlockRule = {
     }
 
     const lastToken = tokens.pop()
-    const newToken = blankToken(TokenType.Blockquote)
-    newToken.block = true
-    newToken.content = matches[1]
-    newToken.tag = 'blockquote'
+    const newToken = blockToken({
+      type: TokenType.Blockquote,
+      content: matches[1],
+      tag: 'blockquote'
+    })
 
     if (!lastToken) {
       return newToken

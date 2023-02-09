@@ -16,16 +16,40 @@ export type Token = {
   children: Array<Token> | null
   content: string | null
   tag: string | null
-  attrs: object | null
+  attrs: Record<string, string> | null
 }
 
-export function blankToken(t: TokenType): Token {
+export function blockToken({
+  type,
+  children = null,
+  content = null,
+  tag = null,
+  attrs = null
+}: Pick<Token, "type"> & Partial<Omit<Token, "block" | "type">>): Token {
+  return blankToken({
+    type,
+    block: true,
+    children,
+    content,
+    tag,
+    attrs
+  })
+}
+
+export function blankToken({
+  type,
+  block = false,
+  children = null,
+  content = null,
+  tag = null,
+  attrs = null
+}: Pick<Token, "type"> & Partial<Omit<Token, "type">>): Token {
   return {
-    block: false,
-    type: t,
-    content: null,
-    children: null,
-    tag: null,
-    attrs: null,
+    type,
+    block,
+    children,
+    content,
+    tag,
+    attrs
   }
 }

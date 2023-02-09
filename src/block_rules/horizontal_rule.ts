@@ -1,13 +1,13 @@
 import { BlockRule } from "../rules";
-import { blankToken, Token, TokenType } from "../token";
+import { blockToken, Token, TokenType } from "../token";
 
 export const horizontalRule: BlockRule = {
   exec: (line): Token | null => {
     if (/^\s*---\s*$/.exec(line)) {
-      const token = blankToken(TokenType.HorizontalRule)
-      token.tag = 'hr'
-      token.block = true
-      return token
+      return blockToken({
+        type: TokenType.HorizontalRule,
+        tag: 'hr',
+      })
     }
 
     return null
