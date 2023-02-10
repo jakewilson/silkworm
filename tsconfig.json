@@ -5,5 +5,7 @@
     "sourceMap": true,
     "outDir": "out",
     "noImplicitAny": true,
+    "strictNullChecks": true,
+    "pretty": true
   }
 }

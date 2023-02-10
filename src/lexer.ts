@@ -1,5 +1,5 @@
 import { blockRules } from "./rules";
-import { paragraphToken, Token, TokenType } from "./token";
+import { Block, paragraph, Token, BlockType } from "./token";
 
 export function lex(input: string): Array<Token> {
   const lexer = new Lexer(input)
@@ -19,8 +19,20 @@ export class Lexer {
     this.index = 0
   }
 
-  lexBlocks(): Array<Token> {
-    const tokens: Array<Token> = []
+  lex(): Array<Block> {
+    const blocks = this.lexBlocks()
+    this.lexInline(blocks)
+    return blocks
+  }
+
+  lexInline(blocks: Array<Block>) {
+    for (let i = 0; i < blocks.length; i++) {
+      const block = blocks[i]
+    }
+  }
+
+  lexBlocks(): Array<Block> {
+    const tokens: Array<Block> = []
 
     let startParagraph = false
     while (!this.atEnd()) {
@@ -47,7 +59,9 @@ export class Lexer {
           const token = tokens.pop()
           if (token) {
             tokens.push(token)
-            if (token.type === TokenType.Paragraph) {
+            if (token.type === BlockType.Paragraph) {
+              // TODO may want to remove this \n
+              // and just use a space
               token.content += `\n${line}`
             } else {
               tokens.push(this.newParagraph(line))
@@ -64,10 +78,8 @@ export class Lexer {
     return tokens
   }
 
-  private newParagraph(content: string): Token {
-    return paragraphToken({
-      content,
-    })
+  private newParagraph(content: string): Block {
+    return paragraph({ content })
   }
 
   atEnd(): boolean {

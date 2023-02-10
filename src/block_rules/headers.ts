@@ -1,8 +1,8 @@
 import { BlockRule } from "../rules"
-import { headerToken, Token } from "../token"
+import { Block, header } from "../token"
 
-export const header: BlockRule = {
-  exec: (line): null | Token => {
+export const headerRule: BlockRule = {
+  exec: (line): Block | null => {
     // headers require a space between the # and the content
     //
     // ###hello  # invalid
@@ -10,7 +10,7 @@ export const header: BlockRule = {
     const matches = /^(#{1,6})\s+(.+)$/.exec(line)
 
     if (matches && matches.length >= 3) {
-      return headerToken({
+      return header({
         content: matches[2],
         tag: `h${matches[1].length}`,
       })

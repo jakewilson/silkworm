@@ -1,15 +1,15 @@
 import { BlockRule } from "../rules"
-import { imageToken, Token, TokenType } from "../token"
+import { Block, image } from "../token"
 
-export const image: BlockRule = {
-  exec: (line): null | Token => {
+export const imageRule: BlockRule = {
+  exec: (line): Block | null => {
     const matches = /^\!\[(.*)\]\((.*)\)$/.exec(line)
 
     if (!matches || matches.length < 3) {
       return null
     }
 
-    return imageToken({
+    return image({
       attrs: {
         alt: matches[1],
         url: matches[2],

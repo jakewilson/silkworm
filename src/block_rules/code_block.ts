@@ -1,8 +1,8 @@
 import { BlockRule } from "../rules"
-import { codeblockToken, Token } from "../token"
+import { Block, codeblock } from "../token"
 
-export const codeblock: BlockRule = {
-  exec: (line, _, lexer): null | Token => {
+export const codeblockRule: BlockRule = {
+  exec: (line, _, lexer): Block | null => {
     const codeblockRE = /^\s*```\s*$/
 
     let matches = codeblockRE.exec(line)
@@ -28,7 +28,7 @@ export const codeblock: BlockRule = {
     // remove trailing \n
     content = content.trimEnd()
 
-    return codeblockToken({
+    return codeblock({
       content,
     })
   },

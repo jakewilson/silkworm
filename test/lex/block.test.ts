@@ -1,78 +1,82 @@
-import { lex } from "../src/lexer"
+import { lex, Lexer } from "../../src/lexer"
 import {
-  blockquoteToken as blockquote,
-  codeblockToken as code,
-  headerToken as h,
-  horizontalRuleToken as hr,
-  imageToken as img,
-  listItemToken as li,
-  orderedListToken as ol,
-  paragraphToken as p,
-  unorderedListToken as ul,
-  Token,
-} from "../src/token"
+  blockquote as blockquote,
+  codeblock as code,
+  header as h,
+  horizontalLine as hr,
+  image as img,
+  listItem as li,
+  orderedList as ol,
+  paragraph as p,
+  unorderedList as ul,
+  Block,
+} from "../../src/token"
+
+function lexBlocks(input: string): Array<Block> {
+  return new Lexer(input).lexBlocks()
+}
 
 test('header 1', () => {
-  const expected: Array<Token> = [h({
+  const expected: Array<Block> = [h({
     content: 'Hello',
     tag: 'h1',
   })]
 
-  expect(lex('# Hello')).toStrictEqual(expected)
+  expect(lexBlocks('# Hello')).toStrictEqual(expected)
 })
 
 test('header 2', () => {
-  const expected: Array<Token> = [h({
+  const expected: Array<Block> = [h({
     content: 'Hello',
     tag: 'h2',
   })]
 
-  expect(lex('## Hello')).toStrictEqual(expected)
+  expect(lexBlocks('## Hello')).toStrictEqual(expected)
 })
 
 test('header 3', () => {
-  const expected: Array<Token> = [h({
+  const expected: Array<Block> = [h({
     content: 'Hello there mate ##',
     tag: 'h3',
   })]
-  expect(lex('### Hello there mate ##')).toStrictEqual(expected)
+  expect(lexBlocks('### Hello there mate ##')).toStrictEqual(expected)
 })
 
 test('header 4', () => {
-  const expected: Array<Token> = [h({
+  const expected: Array<Block> = [h({
     content: 'Hello there mate ##',
     tag: 'h4',
   })]
 
-  expect(lex('#### Hello there mate ##')).toStrictEqual(expected)
+  expect(lexBlocks('#### Hello there mate ##')).toStrictEqual(expected)
 })
 
 test('header 5', () => {
-  const expected: Array<Token> = [h({
+  const expected: Array<Block> = [h({
     content: 'yo',
     tag: 'h5',
   })]
-  expect(lex('#####             yo')).toStrictEqual(expected)
+  expect(lexBlocks('#####             yo')).toStrictEqual(expected)
 })
 
 test('header 6', () => {
-  const expected: Array<Token> = [h({
+  const expected: Array<Block> = [h({
     content: 'yo   ',
     tag: 'h6',
   })]
-  expect(lex('######          yo   ')).toStrictEqual(expected)
+  expect(lexBlocks('######          yo   ')).toStrictEqual(expected)
 })
 
 test('not a header', () => {
-  const expected: Array<Token> = [p({
+  const expected: Array<Block> = [p({
     content: '####hi',
   })]
-  expect(lex('####hi')).toStrictEqual(expected)
+  expect(lexBlocks('####hi')).toStrictEqual(expected)
 })
 
 
 test('multiple headers', () => {
-  const expected: Array<Token> = [h({
+  const expected: Array<Block> = [h({
     content: 'header 1',
     tag: 'h1',
   }), h({
@@ -82,26 +86,26 @@ test('multiple headers', () => {
     content: 'header 3',
     tag: 'h3',
   })]
-  expect(lex('# header 1\n##    header 2\n### header 3')).toStrictEqual(expected)
+  expect(lexBlocks('# header 1\n##    header 2\n### header 3')).toStrictEqual(expected)
 })
 
 test('hr', () => {
-  const expected: Array<Token> = [hr()]
-  expect(lex('---')).toStrictEqual(expected)
+  const expected: Array<Block> = [hr()]
+  expect(lexBlocks('---')).toStrictEqual(expected)
 })
 
 test('header 1 and hr', () => {
-  const expected: Array<Token> = [h({
+  const expected: Array<Block> = [h({
     content: 'hi',
     tag: 'h1',
   }),
   hr()
 ]
-  expect(lex('# hi\n---')).toStrictEqual(expected)
+  expect(lexBlocks('# hi\n---')).toStrictEqual(expected)
 })
 
 test('header 1 and hr and header 2', () => {
-  const expected: Array<Token> = [h({
+  const expected: Array<Block> = [h({
     content: 'hi',
     tag: 'h1',
   }),
@@ -110,21 +114,21 @@ test('header 1 and hr and header 2', () => {
     content: 'nice',
     tag: 'h2',
   })]
-  expect(lex('# hi\n---\n## nice')).toStrictEqual(expected)
+  expect(lexBlocks('# hi\n---\n## nice')).toStrictEqual(expected)
 })
 
 test('ul', () => {
-  const expected: Array<Token> = [ul({
+  const expected: Array<Block> = [ul({
     children: [li({
       content: 'hello',
     })],
   })]
 
-  expect(lex('* hello')).toStrictEqual(expected)
+  expect(lexBlocks('* hello')).toStrictEqual(expected)
 })
 
 test('ul2', () => {
-  const expected: Array<Token> = [ul({
+  const expected: Array<Block> = [ul({
     children: [li({
       content: 'hello',
     }), li({
@@ -133,11 +137,11 @@ test('ul2', () => {
     })],
   })]
 
-  expect(lex('* hello\n* hello *again*')).toStrictEqual(expected)
+  expect(lexBlocks('* hello\n* hello *again*')).toStrictEqual(expected)
 })
 
 test('ul4', () => {
-  const expected: Array<Token> = [ul({
+  const expected: Array<Block> = [ul({
     children: [li({
       content: 'hello',
     }), li({
@@ -150,67 +154,67 @@ test('ul4', () => {
     })],
   })]
 
-  expect(lex('* hello\n* hello *again*\n*     yoooo\n* what   up')).toStrictEqual(expected)
+  expect(lexBlocks('* hello\n* hello *again*\n*     yoooo\n* what   up')).toStrictEqual(expected)
 })
 
 test('not a ul', () => {
-  const expected: Array<Token> = [p({
+  const expected: Array<Block> = [p({
     content: '*hello',
   })]
-  expect(lex('*hello')).toStrictEqual(expected)
+  expect(lexBlocks('*hello')).toStrictEqual(expected)
 })
 
 test('single-line blockquote', () => {
-  const expected: Array<Token> = [blockquote({
+  const expected: Array<Block> = [blockquote({
     content: 'hello',
   })]
 
-  expect(lex('> hello')).toStrictEqual(expected)
+  expect(lexBlocks('> hello')).toStrictEqual(expected)
 })
 
 test('multi-line blockquote', () => {
-  const expected: Array<Token> = [blockquote({
+  const expected: Array<Block> = [blockquote({
     content: 'hello\nthere\nwhat up?',
   })]
 
-  expect(lex('> hello\n> there\n> what up?')).toStrictEqual(expected)
+  expect(lexBlocks('> hello\n> there\n> what up?')).toStrictEqual(expected)
 })
 
 test('nested blockquote', () => {
-  const expected: Array<Token> = [blockquote({
+  const expected: Array<Block> = [blockquote({
     content: 'hello',
   })]
 
-  expect(lex('> hello')).toStrictEqual(expected)
+  expect(lexBlocks('> hello')).toStrictEqual(expected)
 
 })
 
 test('header than blockquote', () => {
-  const expected: Array<Token> = [h({
+  const expected: Array<Block> = [h({
     content: 'header 5',
     tag: 'h5',
   }), blockquote({
     content: 'hello',
   })]
-  expect(lex('##### header 5\n> hello')).toStrictEqual(expected)
+  expect(lexBlocks('##### header 5\n> hello')).toStrictEqual(expected)
 })
 
 test('codeblock', () => {
-  const expected: Array<Token> = [code({
+  const expected: Array<Block> = [code({
     content: 'console.log(\'hello\')',
   })]
-  expect(lex("```\nconsole.log('hello')\n```")).toStrictEqual(expected)
+  expect(lexBlocks("```\nconsole.log('hello')\n```")).toStrictEqual(expected)
 })
 
 test('empty codeblock', () => {
-  const expected: Array<Token> = [code({
+  const expected: Array<Block> = [code({
     content: '',
   })]
-  expect(lex("```\n```")).toStrictEqual(expected)
+  expect(lexBlocks("```\n```")).toStrictEqual(expected)
 })
 
 test('codeblock2', () => {
-  const expected: Array<Token> = [p({
+  const expected: Array<Block> = [p({
     content: "```console.log('two lines');\nx += 6;",
   }), code({
     content: "",
@@ -219,11 +223,11 @@ test('codeblock2', () => {
   // so they are not parsed as the beginning of a codeblock
   // hence the next line `x += 6` is not a part of that codeblock
   // so the final ``` is the beginning of a codeblock that has nothing in it
-  expect(lex("```console.log('two lines');\nx += 6;\n```")).toStrictEqual(expected)
+  expect(lexBlocks("```console.log('two lines');\nx += 6;\n```")).toStrictEqual(expected)
 })
 
 test('blockquote, codeblock, header', () => {
-  const expected: Array<Token> = [blockquote({
+  const expected: Array<Block> = [blockquote({
     content: "this is a quote",
   }), code({
     content: "const x = square(4);",
@@ -232,28 +236,28 @@ test('blockquote, codeblock, header', () => {
     children: null,
     tag: 'h1',
   })]
-  expect(lex("> this is a quote\n```\nconst x = square(4);\n```\n# header!"))
+  expect(lexBlocks("> this is a quote\n```\nconst x = square(4);\n```\n# header!"))
     .toStrictEqual(expected)
 })
 
 test('paragraph', () => {
-  const expected: Array<Token> = [p({
+  const expected: Array<Block> = [p({
     content: "first par",
   })]
-  expect(lex("first par")).toStrictEqual(expected)
+  expect(lexBlocks("first par")).toStrictEqual(expected)
 })
 
 test('paragraph2', () => {
-  const expected: Array<Token> = [p({
+  const expected: Array<Block> = [p({
     content: "first line\nsecond line\nthird line",
   })]
-  expect(lex(`first line
+  expect(lexBlocks(`first line
 second line
 third line`)).toStrictEqual(expected)
 })
 
 test('lots of stuff', () => {
-  const expected: Array<Token> = [h({
+  const expected: Array<Block> = [h({
     content: "Introduction",
     children: null,
     tag: 'h1',
@@ -270,7 +274,7 @@ test('lots of stuff', () => {
   }), p({
     content: "    A different paragraph",
   })]
-  expect(lex(`# Introduction
+  expect(lexBlocks(`# Introduction
     Indent! Dinosaurs have traditionally been considered a separate group from birds, which
 evolved from dinosaurs...
 * first item
@@ -281,7 +285,7 @@ evolved from dinosaurs...
 })
 
 test('lots of stuff2', () => {
-  const expected: Array<Token> = [h({
+  const expected: Array<Block> = [h({
     content: "Introduction",
     children: null,
     tag: 'h1',
@@ -299,7 +303,7 @@ test('lots of stuff2', () => {
     content: "    A different paragraph",
   })]
   // same thing as above except a hardbreak after the header
-  expect(lex(`# Introduction
+  expect(lexBlocks(`# Introduction
 
     Indent! Dinosaurs have traditionally been considered a separate group from birds, which
 evolved from dinosaurs...
@@ -311,17 +315,17 @@ evolved from dinosaurs...
 })
 
 test('image', () => {
-  const expected: Array<Token> = [img({
+  const expected: Array<Block> = [img({
     attrs: {
       alt: 'Picture of a dog',
       url: 'https://www.example.com/dog',
     },
   })]
-  expect(lex('![Picture of a dog](https://www.example.com/dog)')).toStrictEqual(expected)
+  expect(lexBlocks('![Picture of a dog](https://www.example.com/dog)')).toStrictEqual(expected)
 })
 
 test('image2', () => {
-  const expected: Array<Token> = [h({
+  const expected: Array<Block> = [h({
     content: 'Dogs Are Great',
     tag: 'h1',
   }), img({
@@ -340,7 +344,7 @@ test('image2', () => {
   }), p({
     content: 'I love dogs!',
   })]
-  expect(lex(`# Dogs Are Great
+  expect(lexBlocks(`# Dogs Are Great
 ![Cute doggo](example.com/cute)
 * they're cute
 * they're fun
@@ -351,7 +355,7 @@ I love dogs!
 })
 
 test('image3', () => {
-  const expected: Array<Token> = [h({
+  const expected: Array<Block> = [h({
     content: 'Dogs Are Great',
     tag: 'h1',
   }), img({
@@ -368,7 +372,7 @@ test('image3', () => {
   }), p({
     content: 'I love dogs!',
   })]
-  expect(lex(`# Dogs Are Great
+  expect(lexBlocks(`# Dogs Are Great
 
 ![Cute doggo](example.com/cute)
 
@@ -381,7 +385,7 @@ I love dogs!
 })
 
 test('image4', () => {
-  const expected: Array<Token> = [p({
+  const expected: Array<Block> = [p({
     content: 'paragraph 1',
   }), img({
     attrs: {
@@ -391,7 +395,7 @@ test('image4', () => {
   }), p({
     content: 'paragraph 2\nstill paragraph 2',
   })]
-  expect(lex(`paragraph 1
+  expect(lexBlocks(`paragraph 1
 ![Cute doggo](example.com/cute)
 paragraph 2
 still paragraph 2
@@ -399,7 +403,7 @@ still paragraph 2
 })
 
 test('ol 1', () => {
-  const expected: Array<Token> = [ol({
+  const expected: Array<Block> = [ol({
     children: [
       li({ content: "first" }),
       li({ content: "second" }),
@@ -407,11 +411,11 @@ test('ol 1', () => {
     ]
   })]
 
-  expect(lex('1. first\n2. second\n3. third')).toStrictEqual(expected)
+  expect(lexBlocks('1. first\n2. second\n3. third')).toStrictEqual(expected)
 })
 
 test('ol ul', () => {
-  const expected: Array<Token> = [ol({
+  const expected: Array<Block> = [ol({
     children: [
       li({ content: "first" }),
       li({ content: "second" }),
@@ -425,11 +429,11 @@ test('ol ul', () => {
     ]
   })]
 
-  expect(lex('1. first\n2. second\n3. third\n* fourth\n* fifth\n* sixth')).toStrictEqual(expected)
+  expect(lexBlocks('1. first\n2. second\n3. third\n* fourth\n* fifth\n* sixth')).toStrictEqual(expected)
 })
 
 test('ol ul ol ul', () => {
-  const expected: Array<Token> = [ol({
+  const expected: Array<Block> = [ol({
     children: [
       li({ content: "first" }),
     ]
@@ -446,11 +450,11 @@ test('ol ul ol ul', () => {
       li({ content: "fourth" }),
     ]
   })]
-  expect(lex('1. first\n* second\n2. third\n* fourth')).toStrictEqual(expected)
+  expect(lexBlocks('1. first\n* second\n2. third\n* fourth')).toStrictEqual(expected)
 })
 
 test('lots of blocks', () => {
-  const expected: Array<Token> = [ol({
+  const expected: Array<Block> = [ol({
     children: [
       li({ content: "first" }),
       li({ content: "second" }),
@@ -470,7 +474,7 @@ test('lots of blocks', () => {
   ]
   // the value of the numbers don't matter in an ordered list
   // only that there is a digit there
-  expect(lex(`1. first
+  expect(lexBlocks(`1. first
 22. second
 ![hi](nice.com)
 ![another alt but longer](http://url.com)

@@ -1,8 +1,8 @@
 import { BlockRule } from "../rules"
-import { blockquoteToken, Token, TokenType } from "../token"
+import { Block, blockquote, BlockType } from "../token"
 
-export const blockquote: BlockRule = {
-  exec: (line, tokens): null | Token => {
+export const blockquoteRule: BlockRule = {
+  exec: (line, tokens): Block | null => {
     const matches = /^\s*>\s+(.*)/.exec(line)
 
     if (!matches || matches.length < 2) {
@@ -10,13 +10,13 @@ export const blockquote: BlockRule = {
     }
 
     const lastToken = tokens.pop()
-    const newToken = blockquoteToken({
+    const newToken = blockquote({
       content: matches[1],
     })
 
     if (!lastToken) {
       return newToken
-    } else if (lastToken.type !== TokenType.Blockquote) {
+    } else if (lastToken.type !== BlockType.Blockquote) {
       // put the token we just popped back
       tokens.push(lastToken)
 
