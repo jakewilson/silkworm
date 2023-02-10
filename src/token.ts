@@ -5,6 +5,7 @@ export enum TokenType {
   HorizontalRule,
   Image,
   ListItem,
+  OrderedList,
   Paragraph,
   Text,
   UnorderedList,
@@ -75,6 +76,14 @@ export function unorderedListToken(props?: TokenFuncProps) {
   return blockToken({
     type: TokenType.UnorderedList,
     tag: "ul",
+    ...props,
+  })
+}
+
+export function orderedListToken(props?: TokenFuncProps) {
+  return blockToken({
+    type: TokenType.OrderedList,
+    tag: "ol",
     ...props,
   })
 }
