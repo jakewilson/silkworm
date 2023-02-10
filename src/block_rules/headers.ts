@@ -1,5 +1,5 @@
 import { BlockRule } from "../rules"
-import { blockToken, Token, TokenType } from "../token"
+import { headerToken, Token } from "../token"
 
 export const header: BlockRule = {
   exec: (line): null | Token => {
@@ -10,8 +10,7 @@ export const header: BlockRule = {
     const matches = /^(#{1,6})\s+(.+)$/.exec(line)
 
     if (matches && matches.length >= 3) {
-      return blockToken({
-        type: TokenType.Header,
+      return headerToken({
         content: matches[2],
         tag: `h${matches[1].length}`,
       })

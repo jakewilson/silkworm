@@ -1,5 +1,5 @@
 import { BlockRule } from "../rules"
-import { blankToken, blockToken, Token, TokenType } from "../token"
+import { imageToken, Token, TokenType } from "../token"
 
 export const image: BlockRule = {
   exec: (line): null | Token => {
@@ -9,13 +9,11 @@ export const image: BlockRule = {
       return null
     }
 
-    return blockToken({
-      type: TokenType.Image,
+    return imageToken({
       attrs: {
         alt: matches[1],
         url: matches[2],
-      },
-      tag: 'img',
+      }
     })
   },
 }

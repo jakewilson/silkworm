@@ -1,9 +1,8 @@
 import { lex } from "../src/lexer"
-import { blockToken, Token, TokenType } from "../src/token"
+import { blockquoteToken, codeblockToken, headerToken, horizontalRuleToken, imageToken, listItemToken, paragraphToken, Token, unorderedListToken } from "../src/token"
 
 test('header 1', () => {
-  const expected: Array<Token> = [blockToken({
-    type: TokenType.Header,
+  const expected: Array<Token> = [headerToken({
     content: 'Hello',
     tag: 'h1',
   })]
@@ -12,8 +11,7 @@ test('header 1', () => {
 })
 
 test('header 2', () => {
-  const expected: Array<Token> = [blockToken({
-    type: TokenType.Header,
+  const expected: Array<Token> = [headerToken({
     content: 'Hello',
     tag: 'h2',
   })]
@@ -22,8 +20,7 @@ test('header 2', () => {
 })
 
 test('header 3', () => {
-  const expected: Array<Token> = [blockToken({
-    type: TokenType.Header,
+  const expected: Array<Token> = [headerToken({
     content: 'Hello there mate ##',
     tag: 'h3',
   })]
@@ -31,8 +28,7 @@ test('header 3', () => {
 })
 
 test('header 4', () => {
-  const expected: Array<Token> = [blockToken({
-    type: TokenType.Header,
+  const expected: Array<Token> = [headerToken({
     content: 'Hello there mate ##',
     tag: 'h4',
   })]
@@ -41,8 +37,7 @@ test('header 4', () => {
 })
 
 test('header 5', () => {
-  const expected: Array<Token> = [blockToken({
-    type: TokenType.Header,
+  const expected: Array<Token> = [headerToken({
     content: 'yo',
     tag: 'h5',
   })]
@@ -50,8 +45,7 @@ test('header 5', () => {
 })
 
 test('header 6', () => {
-  const expected: Array<Token> = [blockToken({
-    type: TokenType.Header,
+  const expected: Array<Token> = [headerToken({
     content: 'yo   ',
     tag: 'h6',
   })]
@@ -59,26 +53,21 @@ test('header 6', () => {
 })
 
 test('not a header', () => {
-  const expected: Array<Token> = [blockToken({
-    type: TokenType.Paragraph,
+  const expected: Array<Token> = [paragraphToken({
     content: '####hi',
-    tag: 'p',
   })]
   expect(lex('####hi')).toStrictEqual(expected)
 })
 
 
 test('multiple headers', () => {
-  const expected: Array<Token> = [blockToken({
-    type: TokenType.Header,
+  const expected: Array<Token> = [headerToken({
     content: 'header 1',
     tag: 'h1',
-  }), blockToken({
-    type: TokenType.Header,
+  }), headerToken({
     content: 'header 2',
     tag: 'h2',
-  }), blockToken({
-    type: TokenType.Header,
+  }), headerToken({
     content: 'header 3',
     tag: 'h3',
   })]
@@ -86,38 +75,27 @@ test('multiple headers', () => {
 })
 
 test('hr', () => {
-  const expected: Array<Token> = [blockToken({
-    type: TokenType.HorizontalRule,
-    content: null,
-    tag: 'hr',
-  })]
+  const expected: Array<Token> = [horizontalRuleToken()]
   expect(lex('---')).toStrictEqual(expected)
 })
 
 test('header 1 and hr', () => {
-  const expected: Array<Token> = [blockToken({
-    type: TokenType.Header,
+  const expected: Array<Token> = [headerToken({
     content: 'hi',
     tag: 'h1',
-  }), blockToken({
-    type: TokenType.HorizontalRule,
-    content: null,
-    tag: 'hr',
-  })]
+  }),
+  horizontalRuleToken()
+]
   expect(lex('# hi\n---')).toStrictEqual(expected)
 })
 
 test('header 1 and hr and header 2', () => {
-  const expected: Array<Token> = [blockToken({
-    type: TokenType.Header,
+  const expected: Array<Token> = [headerToken({
     content: 'hi',
     tag: 'h1',
-  }), blockToken({
-    type: TokenType.HorizontalRule,
-    content: null,
-    tag: 'hr',
-  }), blockToken({
-    type: TokenType.Header,
+  }),
+  horizontalRuleToken(),
+  headerToken({
     content: 'nice',
     tag: 'h2',
   })]
@@ -125,108 +103,71 @@ test('header 1 and hr and header 2', () => {
 })
 
 test('ul', () => {
-  const expected: Array<Token> = [blockToken({
-    type: TokenType.UnorderedList,
-    content: null,
-    children: [blockToken({
-      type: TokenType.ListItem,
+  const expected: Array<Token> = [unorderedListToken({
+    children: [listItemToken({
       content: 'hello',
-      children: null,
-      tag: 'li'
     })],
-    tag: 'ul',
   })]
 
   expect(lex('* hello')).toStrictEqual(expected)
 })
 
 test('ul2', () => {
-  const expected: Array<Token> = [blockToken({
-    type: TokenType.UnorderedList,
-    content: null,
-    children: [blockToken({
-      type: TokenType.ListItem,
+  const expected: Array<Token> = [unorderedListToken({
+    children: [listItemToken({
       content: 'hello',
-      children: null,
-      tag: 'li'
-    }), blockToken({
-      type: TokenType.ListItem,
+    }), listItemToken({
       // TODO this should break later when I add emphasis
       content: 'hello *again*',
-      tag: 'li'
     })],
-    tag: 'ul',
   })]
 
   expect(lex('* hello\n* hello *again*')).toStrictEqual(expected)
 })
 
 test('ul4', () => {
-  const expected: Array<Token> = [blockToken({
-    type: TokenType.UnorderedList,
-    content: null,
-    children: [blockToken({
-      type: TokenType.ListItem,
+  const expected: Array<Token> = [unorderedListToken({
+    children: [listItemToken({
       content: 'hello',
-      tag: 'li'
-    }), blockToken({
-      type: TokenType.ListItem,
+    }), listItemToken({
       // TODO this should break later when I add emphasis
       content: 'hello *again*',
-      tag: 'li'
-    }), blockToken({
-      type: TokenType.ListItem,
+    }), listItemToken({
       content: 'yoooo',
-      tag: 'li'
-    }), blockToken({
-      type: TokenType.ListItem,
+    }), listItemToken({
       content: 'what   up',
-      tag: 'li'
     })],
-    tag: 'ul',
   })]
 
   expect(lex('* hello\n* hello *again*\n*     yoooo\n* what   up')).toStrictEqual(expected)
 })
 
 test('not a ul', () => {
-  const expected: Array<Token> = [blockToken({
-    type: TokenType.Paragraph,
+  const expected: Array<Token> = [paragraphToken({
     content: '*hello',
-    children: null,
-    tag: 'p',
   })]
   expect(lex('*hello')).toStrictEqual(expected)
 })
 
 test('single-line blockquote', () => {
-  const expected: Array<Token> = [blockToken({
-    type: TokenType.Blockquote,
+  const expected: Array<Token> = [blockquoteToken({
     content: 'hello',
-    children: null,
-    tag: 'blockquote',
   })]
 
   expect(lex('> hello')).toStrictEqual(expected)
 })
 
 test('multi-line blockquote', () => {
-  const expected: Array<Token> = [blockToken({
-    type: TokenType.Blockquote,
+  const expected: Array<Token> = [blockquoteToken({
     content: 'hello\nthere\nwhat up?',
-    children: null,
-    tag: 'blockquote',
   })]
 
   expect(lex('> hello\n> there\n> what up?')).toStrictEqual(expected)
 })
 
 test('nested blockquote', () => {
-  const expected: Array<Token> = [blockToken({
-    type: TokenType.Blockquote,
+  const expected: Array<Token> = [blockquoteToken({
     content: 'hello',
-    children: null,
-    tag: 'blockquote',
   })]
 
   expect(lex('> hello')).toStrictEqual(expected)
@@ -234,51 +175,34 @@ test('nested blockquote', () => {
 })
 
 test('header than blockquote', () => {
-  const expected: Array<Token> = [blockToken({
-    type: TokenType.Header,
+  const expected: Array<Token> = [headerToken({
     content: 'header 5',
-    children: null,
     tag: 'h5',
-  }), blockToken({
-    type: TokenType.Blockquote,
+  }), blockquoteToken({
     content: 'hello',
-    children: null,
-    tag: 'blockquote',
   })]
   expect(lex('##### header 5\n> hello')).toStrictEqual(expected)
 })
 
 test('codeblock', () => {
-  const expected: Array<Token> = [blockToken({
-    type: TokenType.Codeblock,
+  const expected: Array<Token> = [codeblockToken({
     content: 'console.log(\'hello\')',
-    children: null,
-    tag: 'code',
   })]
   expect(lex("```\nconsole.log('hello')\n```")).toStrictEqual(expected)
 })
 
 test('empty codeblock', () => {
-  const expected: Array<Token> = [blockToken({
-    type: TokenType.Codeblock,
+  const expected: Array<Token> = [codeblockToken({
     content: '',
-    children: null,
-    tag: 'code',
   })]
   expect(lex("```\n```")).toStrictEqual(expected)
 })
 
 test('codeblock2', () => {
-  const expected: Array<Token> = [blockToken({
-    type: TokenType.Paragraph,
+  const expected: Array<Token> = [paragraphToken({
     content: "```console.log('two lines');\nx += 6;",
-    children: null,
-    tag: 'p',
-  }), blockToken({
-    type: TokenType.Codeblock,
+  }), codeblockToken({
     content: "",
-    children: null,
-    tag: 'code',
   })]
   // the three backticks aren't on their own line,
   // so they are not parsed as the beginning of a codeblock
@@ -288,18 +212,11 @@ test('codeblock2', () => {
 })
 
 test('blockquote, codeblock, header', () => {
-  const expected: Array<Token> = [blockToken({
-    type: TokenType.Blockquote,
+  const expected: Array<Token> = [blockquoteToken({
     content: "this is a quote",
-    children: null,
-    tag: 'blockquote',
-  }), blockToken({
-    type: TokenType.Codeblock,
+  }), codeblockToken({
     content: "const x = square(4);",
-    children: null,
-    tag: 'code',
-  }), blockToken({
-    type: TokenType.Header,
+  }), headerToken({
     content: "header!",
     children: null,
     tag: 'h1',
@@ -309,21 +226,15 @@ test('blockquote, codeblock, header', () => {
 })
 
 test('paragraph', () => {
-  const expected: Array<Token> = [blockToken({
-    type: TokenType.Paragraph,
+  const expected: Array<Token> = [paragraphToken({
     content: "first par",
-    children: null,
-    tag: 'p',
   })]
   expect(lex("first par")).toStrictEqual(expected)
 })
 
 test('paragraph2', () => {
-  const expected: Array<Token> = [blockToken({
-    type: TokenType.Paragraph,
+  const expected: Array<Token> = [paragraphToken({
     content: "first line\nsecond line\nthird line",
-    children: null,
-    tag: 'p',
   })]
   expect(lex(`first line
 second line
@@ -331,41 +242,22 @@ third line`)).toStrictEqual(expected)
 })
 
 test('lots of stuff', () => {
-  const expected: Array<Token> = [blockToken({
-    type: TokenType.Header,
+  const expected: Array<Token> = [headerToken({
     content: "Introduction",
     children: null,
     tag: 'h1',
-  }), blockToken({
-    type: TokenType.Paragraph,
+  }), paragraphToken({
     content: "    Indent! Dinosaurs have traditionally been considered a separate group from birds, which\nevolved from dinosaurs...",
-    children: null,
-    tag: 'p',
-  }), blockToken({
-    type: TokenType.UnorderedList,
-    content: null,
-    children: [blockToken({
-      type: TokenType.ListItem,
+  }), unorderedListToken({
+    children: [listItemToken({
       content: "first item",
-      children: null,
-      tag: 'li',
-    }), blockToken({
-      type: TokenType.ListItem,
+    }), listItemToken({
       content: "second item",
-      children: null,
-      tag: 'li',
     })],
-    tag: 'ul',
-  }), blockToken({
-    type: TokenType.Paragraph,
+  }), paragraphToken({
     content: "    Paragraph again",
-    children: null,
-    tag: 'p',
-  }), blockToken({
-    type: TokenType.Paragraph,
+  }), paragraphToken({
     content: "    A different paragraph",
-    children: null,
-    tag: 'p',
   })]
   expect(lex(`# Introduction
     Indent! Dinosaurs have traditionally been considered a separate group from birds, which
@@ -378,41 +270,22 @@ evolved from dinosaurs...
 })
 
 test('lots of stuff2', () => {
-  const expected: Array<Token> = [blockToken({
-    type: TokenType.Header,
+  const expected: Array<Token> = [headerToken({
     content: "Introduction",
     children: null,
     tag: 'h1',
-  }), blockToken({
-    type: TokenType.Paragraph,
+  }), paragraphToken({
     content: "    Indent! Dinosaurs have traditionally been considered a separate group from birds, which\nevolved from dinosaurs...",
-    children: null,
-    tag: 'p',
-  }), blockToken({
-    type: TokenType.UnorderedList,
-    content: null,
-    children: [blockToken({
-      type: TokenType.ListItem,
+  }), unorderedListToken({
+    children: [listItemToken({
       content: "first item",
-      children: null,
-      tag: 'li',
-    }), blockToken({
-      type: TokenType.ListItem,
+    }), listItemToken({
       content: "second item",
-      children: null,
-      tag: 'li',
     })],
-    tag: 'ul',
-  }), blockToken({
-    type: TokenType.Paragraph,
+  }), paragraphToken({
     content: "    Paragraph again",
-    children: null,
-    tag: 'p',
-  }), blockToken({
-    type: TokenType.Paragraph,
+  }), paragraphToken({
     content: "    A different paragraph",
-    children: null,
-    tag: 'p',
   })]
   // same thing as above except a hardbreak after the header
   expect(lex(`# Introduction
@@ -427,53 +300,34 @@ evolved from dinosaurs...
 })
 
 test('image', () => {
-  const expected: Array<Token> = [blockToken({
-    type: TokenType.Image,
-    content: null,
+  const expected: Array<Token> = [imageToken({
     attrs: {
       alt: 'Picture of a dog',
       url: 'https://www.example.com/dog',
     },
-    tag: 'img',
   })]
   expect(lex('![Picture of a dog](https://www.example.com/dog)')).toStrictEqual(expected)
 })
 
 test('image2', () => {
-  const expected: Array<Token> = [blockToken({
-    type: TokenType.Header,
+  const expected: Array<Token> = [headerToken({
     content: 'Dogs Are Great',
     tag: 'h1',
-  }), blockToken({
-    type: TokenType.Image,
-    content: null,
+  }), imageToken({
     attrs: {
       alt: 'Cute doggo',
       url: 'example.com/cute',
     },
-    tag: 'img',
-  }), blockToken({
-    type: TokenType.UnorderedList,
-    content: null,
-    children: [blockToken({
-      type: TokenType.ListItem,
-      tag: 'li',
+  }), unorderedListToken({
+    children: [listItemToken({
       content: "they're cute"
-    }), blockToken({
-      type: TokenType.ListItem,
-      tag: 'li',
+    }), listItemToken({
       content: "they're fun"
-    }), blockToken({
-      type: TokenType.ListItem,
-      tag: 'li',
+    }), listItemToken({
       content: "they're loving"
     })],
-    tag: 'ul',
-  }), blockToken({
-    type: TokenType.Paragraph,
+  }), paragraphToken({
     content: 'I love dogs!',
-    children: null,
-    tag: 'p',
   })]
   expect(lex(`# Dogs Are Great
 ![Cute doggo](example.com/cute)
@@ -486,40 +340,22 @@ I love dogs!
 })
 
 test('image3', () => {
-  const expected: Array<Token> = [blockToken({
-    type: TokenType.Header,
+  const expected: Array<Token> = [headerToken({
     content: 'Dogs Are Great',
     tag: 'h1',
-  }), blockToken({
-    type: TokenType.Image,
-    content: null,
+  }), imageToken({
     attrs: {
       alt: 'Cute doggo',
       url: 'example.com/cute',
     },
-    tag: 'img',
-  }), blockToken({
-    type: TokenType.UnorderedList,
-    content: null,
-    children: [blockToken({
-      type: TokenType.ListItem,
-      tag: 'li',
-      content: "they're cute"
-    }), blockToken({
-      type: TokenType.ListItem,
-      tag: 'li',
-      content: "they're fun"
-    }), blockToken({
-      type: TokenType.ListItem,
-      tag: 'li',
-      content: "they're loving"
-    })],
-    tag: 'ul',
-  }), blockToken({
-    type: TokenType.Paragraph,
+  }), unorderedListToken({
+    children: [
+      listItemToken({ content: "they're cute" }),
+      listItemToken({ content: "they're fun" }),
+      listItemToken({ content: "they're loving" }),
+    ],
+  }), paragraphToken({
     content: 'I love dogs!',
-    children: null,
-    tag: 'p',
   })]
   expect(lex(`# Dogs Are Great
 
@@ -534,22 +370,15 @@ I love dogs!
 })
 
 test('image4', () => {
-  const expected: Array<Token> = [blockToken({
-    type: TokenType.Paragraph,
+  const expected: Array<Token> = [paragraphToken({
     content: 'paragraph 1',
-    tag: 'p',
-  }), blockToken({
-    type: TokenType.Image,
-    content: null,
+  }), imageToken({
     attrs: {
       alt: 'Cute doggo',
       url: 'example.com/cute',
     },
-    tag: 'img',
-  }), blockToken({
-    type: TokenType.Paragraph,
+  }), paragraphToken({
     content: 'paragraph 2\nstill paragraph 2',
-    tag: 'p',
   })]
   expect(lex(`paragraph 1
 ![Cute doggo](example.com/cute)

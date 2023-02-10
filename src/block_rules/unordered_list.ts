@@ -1,5 +1,5 @@
 import { BlockRule } from "../rules";
-import { blankToken, blockToken, Token, TokenType } from "../token";
+import { listItemToken, Token, TokenType, unorderedListToken } from "../token";
 
 export const unorderedList: BlockRule = {
   exec: (line, tokens): Token | null => {
@@ -8,10 +8,8 @@ export const unorderedList: BlockRule = {
       return null
     }
 
-    const item = blockToken({
-      type: TokenType.ListItem,
+    const item = listItemToken({
       content: matches[2],
-      tag: 'li',
     })
 
     let token = tokens.pop()
@@ -23,9 +21,7 @@ export const unorderedList: BlockRule = {
         tokens.push(token)
       }
 
-      token = blockToken({
-        type: TokenType.UnorderedList,
-        tag: 'ul',
+      token = unorderedListToken({
         children: [],
       })
     }

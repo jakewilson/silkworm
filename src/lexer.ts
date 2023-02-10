@@ -1,5 +1,5 @@
 import { blockRules } from "./rules";
-import { blockToken, Token, TokenType } from "./token";
+import { paragraphToken, Token, TokenType } from "./token";
 
 export function lex(input: string): Array<Token> {
   const lexer = new Lexer(input)
@@ -65,9 +65,7 @@ export class Lexer {
   }
 
   private newParagraph(content: string): Token {
-    return blockToken({
-      type: TokenType.Paragraph,
-      tag: 'p',
+    return paragraphToken({
       content,
     })
   }
